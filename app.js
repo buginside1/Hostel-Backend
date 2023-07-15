@@ -1,13 +1,12 @@
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const morgan=require("morgan");
 const path = require('path');
 
 const app = express();
 
 // config
-if (process.env.NODE_ENV !== "PRODUCTION") {
-    require('dotenv').config({ path: "backend/config/config.env" })
-}
+require('dotenv').config()
 
 // Routes import
 const userRoute = require('./routes/userRoute');
@@ -19,14 +18,13 @@ const errorMiddleware = require('./middlewares/errorMiddleware');
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cookieParser());
-
+app.use(morgan("dev"));
 // cors cofiguration
-if (process.env.NODE_ENV !== "PRODUCTION") {
+
     app.use(require('cors')({
         origin: process.env.FRONTEND_URL,
         optionsSuccessStatus: 200,
     }))
-}
 
 app.use('/api/v1', userRoute);
 app.use('/api/v1', hotelRoute);
