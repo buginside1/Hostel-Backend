@@ -31,11 +31,6 @@ app.use('/api/v1', hotelRoute);
 app.use('/api/v1', roomRoute);
 app.use('/api/v1', bookingRoute);
 
-app.use(express.static(path.join(__dirname + "./../frontend/build")));
-
-app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, "./../frontend/build/index.html"));
-})
 
 // error middileware
 app.use(errorMiddleware)
