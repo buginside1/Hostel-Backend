@@ -3,7 +3,7 @@ const databaseConnect = require('./config/database');
 const cloudinary = require('cloudinary').v2;
 const { Server } = require("socket.io");
 const http = require("http");
-
+require('dotenv').config();
 const port = process.env.PORT;
 
 // database connect
