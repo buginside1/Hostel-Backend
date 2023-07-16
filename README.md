@@ -1,6 +1,6 @@
 # MERN E-COMMERCE APPLICATION
 
-Hi! My name is **Tushar Biswas**, I have developed this hotel booking application.
+Hi! My name is **Tushar Biswas**, I have developed this hostel booking application.
 
 # Install Dependencies
 

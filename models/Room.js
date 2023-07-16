@@ -36,9 +36,9 @@ const roomSchema = new mongoose.Schema(
         url: String,
       },
     ],
-    hotel: {
+    hostel: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Hotels",
+      ref: "Hostels",
       required: true,
     },
   },

@@ -1,5 +1,5 @@
 const catchAsyncErrors = require("../middlewares/catchAsyncErrors");
-const Hotel = require("../models/Hotel");
+const Hostel = require("../models/Hostel");
 const Room = require("../models/Room");
 const Booking = require("../models/Booking");
 const ErrorHandler = require("../utils/errorHandler");
@@ -7,10 +7,10 @@ const cloudinary = require("cloudinary").v2;
 const getDataUri = require("../utils/getDataUri");
 
 // Create Hostel -- admin
-exports.createHotel = catchAsyncErrors(async (req, res, next) => {
+exports.createHostel = catchAsyncErrors(async (req, res, next) => {
   const { name, location, distance, specification, description } = req.body;
 
-  const hotel = await Hotel.create({
+  const hostel = await Hostel.create({
     name,
     location,
     distance,
@@ -23,8 +23,8 @@ exports.createHotel = catchAsyncErrors(async (req, res, next) => {
   });
 });
 
-// upload hotel pictures -- admin
-exports.uploadHotelPictures = catchAsyncErrors(async (req, res, next) => {
+// upload hostel pictures -- admin
+exports.uploadHostelPictures = catchAsyncErrors(async (req, res, next) => {
   const pictures = req.files;
   const id = req.params.id;
 
@@ -32,9 +32,9 @@ exports.uploadHotelPictures = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Please upload hostel pictures", 400));
   }
 
-  const hotel = await Hotel.findById(id);
+  const hostel = await Hostel.findById(id);
 
-  if (!hotel) {
+  if (!hostel) {
     return next(new ErrorHandler("Hostel not found", 404));
   }
 
@@ -43,7 +43,7 @@ exports.uploadHotelPictures = catchAsyncErrors(async (req, res, next) => {
       const pictureUri = getDataUri(picture);
 
       const myCloud = await cloudinary.uploader.upload(pictureUri.content, {
-        folder: "/Hostelites/hotels",
+        folder: "/Hostelites/hostels",
         crop: "scale",
       });
 
@@ -55,30 +55,30 @@ exports.uploadHotelPictures = catchAsyncErrors(async (req, res, next) => {
   );
 
   // destroy previous pictures
-  if (hotel.pictures.length > 0) {
+  if (hostel.pictures.length > 0) {
     await Promise.all(
-      hotel.pictures.map(async (picture) => {
+      hostel.pictures.map(async (picture) => {
         await cloudinary.uploader.destroy(picture.public_id);
         return;
       })
     );
   }
 
-  hotel.pictures = picturePath;
-  await hotel.save();
+  hostel.pictures = picturePath;
+  await hostel.save();
 
   res.status(200).json({
     success: true,
-    hotel,
+    hostel,
   });
 });
 
-// update hotel details -- admin
-exports.updateHotel = catchAsyncErrors(async (req, res, next) => {
+// update hostel details -- admin
+exports.updateHostel = catchAsyncErrors(async (req, res, next) => {
   const id = req.params.id;
   const { name, location, distance, specification, description } = req.body;
 
-  const hotel = await Hotel.findByIdAndUpdate(
+  const hostel = await Hostel.findByIdAndUpdate(
     id,
     {
       $set: {
@@ -92,27 +92,27 @@ exports.updateHotel = catchAsyncErrors(async (req, res, next) => {
     { new: true }
   );
 
-  if (!hotel) {
+  if (!hostel) {
     return next(new ErrorHandler("Hostel not found", 404));
   }
 
   res.status(200).json({
     success: true,
-    hotel,
+    hostel,
   });
 });
 
-// delete hotel -- admin
-exports.deleteHotel = catchAsyncErrors(async (req, res, next) => {
-  const hotel = await Hotel.findById(req.params.id);
+// delete hostel -- admin
+exports.deleteHostel = catchAsyncErrors(async (req, res, next) => {
+  const hostel = await Hostel.findById(req.params.id);
 
-  if (!hotel) {
+  if (!hostel) {
     return next(new ErrorHandler("Hostel not found", 404));
   }
 
-  // delete hotel rooms
+  // delete hostel rooms
   await Promise.all(
-    hotel.rooms.map(async (roomId) => {
+    hostel.rooms.map(async (roomId) => {
       const room = await Room.findById(roomId);
 
       room && (await room.delete());
@@ -121,49 +121,49 @@ exports.deleteHotel = catchAsyncErrors(async (req, res, next) => {
     })
   );
 
-  if (hotel.pictures.length > 0) {
+  if (hostel.pictures.length > 0) {
     await Promise.all(
-      hotel.pictures.map(async (picture) => {
+      hostel.pictures.map(async (picture) => {
         await cloudinary.uploader.destroy(picture.public_id);
       })
     );
   }
 
-  // delete hotel's booking details
+  // delete hostel's booking details
   const bookings = await Booking.find({
-    hotel: hotel.id,
+    hostel: hostel.id,
   });
 
   if (bookings.length > 0) {
     await Promise.all(bookings.map(async (booking) => await booking.delete()));
   }
 
-  await hotel.delete();
-  const hotels = await Hotel.find();
+  await hostel.delete();
+  const hostels = await Hostel.find();
 
   res.status(200).json({
     success: true,
-    hotels,
+    hostels,
     message: "Hostel deleted successfully",
   });
 });
 
-// get hotel details
-exports.getHotelDetails = catchAsyncErrors(async (req, res, next) => {
-  const hotel = await Hotel.findById(req.params.id).populate("rooms");
+// get hostel details
+exports.getHostelDetails = catchAsyncErrors(async (req, res, next) => {
+  const hostel = await Hostel.findById(req.params.id).populate("rooms");
 
-  if (!hotel) {
+  if (!hostel) {
     return next(new ErrorHandler("Hostel not found", 404));
   }
 
   res.status(200).json({
     success: true,
-    hotel,
+    hostel,
   });
 });
 
-// get all hotels
-exports.getAllHotels = catchAsyncErrors(async (req, res, next) => {
+// get all hostels
+exports.getAllHostels = catchAsyncErrors(async (req, res, next) => {
   const keyword = req.query.location;
   const roomCount = Number(req.query.room);
   const personCount = Number(req.query.person);
@@ -190,7 +190,7 @@ exports.getAllHotels = catchAsyncErrors(async (req, res, next) => {
     }
   }
 
-  let hotels = await Hotel.find({
+  let hostels = await Hostel.find({
     location: {
       $regex: keyword ? keyword : "",
       $options: "i",
@@ -199,16 +199,16 @@ exports.getAllHotels = catchAsyncErrors(async (req, res, next) => {
   }).populate("rooms");
 
   if (req.query.person) {
-    hotels = hotels.filter((hotel) => {
-      return hotel.rooms.some((room) => {
+    hostels = hostels.filter((hostel) => {
+      return hostel.rooms.some((room) => {
         return personCount > 1 ? room.type === "Double" : true;
       });
     });
   }
 
   if (dates.length > 0) {
-    hotels = hotels.filter((hotel) => {
-      return hotel.rooms.some((room) => {
+    hostels = hostels.filter((hostel) => {
+      return hostel.rooms.some((room) => {
         return room.notAvailable.every((date) => {
           return !dates.includes(Date.parse(date));
         });
@@ -218,6 +218,6 @@ exports.getAllHotels = catchAsyncErrors(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    hotels,
+    hostels,
   });
 });

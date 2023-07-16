@@ -1,5 +1,5 @@
 const Room = require("../models/Room");
-const Hotel = require("../models/Hotel");
+const Hostel = require("../models/Hostel");
 const Booking = require("../models/Booking");
 const cloudinary = require("cloudinary").v2;
 const catchAsyncErrors = require("../middlewares/catchAsyncErrors");
@@ -8,16 +8,16 @@ const getDataUri = require("../utils/getDataUri");
 
 // create room -- admin
 exports.createRoom = catchAsyncErrors(async (req, res, next) => {
-  const hotelId = req.params.id;
+  const hostelId = req.params.id;
   const { number, name, type, specification, PricePerDay } = req.body;
 
-  const hotel = await Hotel.findById(hotelId);
-  if (!hotel) {
-    return next(new ErrorHandler("Hotel not found", 404));
+  const hostel = await Hostel.findById(hostelId);
+  if (!hostel) {
+    return next(new ErrorHandler("Hostel not found", 404));
   }
 
   const isDuplicate = await Room.findOne({
-    hotel: hotel.id,
+    hostel: hostel.id,
     number,
   });
 
@@ -31,11 +31,11 @@ exports.createRoom = catchAsyncErrors(async (req, res, next) => {
     type,
     specification,
     PricePerDay,
-    hotel: hotel.id,
+    hostel: hostel.id,
   });
 
-  hotel.rooms.push(room.id);
-  await hotel.save();
+  hostel.rooms.push(room.id);
+  await hostel.save();
 
   res.status(201).json({
     success: true,
@@ -134,9 +134,9 @@ exports.deleteRoom = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Room not found", 404));
   }
 
-  // delete room from hotel
-  const roomsHotel = await Hotel.findById(room.hotel);
-  roomsHotel.rooms = roomsHotel.rooms.filter(
+  // delete room from hostel
+  const roomsHostel = await Hostel.findById(room.hostel);
+  roomsHostel.rooms = roomsHostel.rooms.filter(
     (room) => room.toString() !== req.params.id
   );
 
@@ -157,20 +157,20 @@ exports.deleteRoom = catchAsyncErrors(async (req, res, next) => {
     await Promise.all(bookings.map(async (booking) => await booking.delete()));
   }
 
-  await roomsHotel.save();
+  await roomsHostel.save();
   await room.delete();
-  const hotel = await Hotel.findById(roomsHotel.id).populate("rooms");
+  const hostel = await Hostel.findById(roomsHostel.id).populate("rooms");
 
   res.status(200).json({
     success: true,
-    hotel,
+    hostel,
     message: "room deleted successfully",
   });
 });
 
 // get room details
 exports.getRoomDetails = catchAsyncErrors(async (req, res, next) => {
-  const room = await Room.findById(req.params.id).populate("hotel");
+  const room = await Room.findById(req.params.id).populate("hostel");
 
   if (!room) {
     return next(new ErrorHandler("Room not found", 404));
@@ -183,16 +183,16 @@ exports.getRoomDetails = catchAsyncErrors(async (req, res, next) => {
 });
 
 // get all rooms
-exports.getHotelRooms = catchAsyncErrors(async (req, res, next) => {
-  const hotelId = req.params.id;
+exports.getHostelRooms = catchAsyncErrors(async (req, res, next) => {
+  const hostelId = req.params.id;
 
-  const hotel = await Hotel.findById(hotelId);
-  if (!hotel) {
-    return next(new ErrorHandler("Hotel not found.", 404));
+  const hostel = await Hostel.findById(hostelId);
+  if (!hostel) {
+    return next(new ErrorHandler("Hostel not found.", 404));
   }
 
   const rooms = await Room.find({
-    hotel: hotelId,
+    hostel: hostelId,
   });
 
   res.status(200).json({

@@ -1,5 +1,5 @@
 const Booking = require("../models/Booking");
-const Hotel = require("../models/Hotel");
+const Hostel = require("../models/Hostel");
 const Room = require("../models/Room");
 const catchAsyncErrors = require("../middlewares/catchAsyncErrors");
 const ErrorHandler = require("../utils/errorHandler");
@@ -19,9 +19,9 @@ exports.createBooking = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Invalid Payment Info", 400));
   }
 
-  const hotel = await Hotel.findById(req.params.id);
-  if (!hotel) {
-    return next(new ErrorHandler("Hotel not found", 404));
+  const hostel = await Hostel.findById(req.params.id);
+  if (!hostel) {
+    return next(new ErrorHandler("Hostel not found", 404));
   }
 
   const room = await Room.findById(req.params.room);
@@ -29,10 +29,10 @@ exports.createBooking = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Room not found", 404));
   }
 
-  const isHotelsRoom = hotel.rooms.includes(room.id);
-  if (!isHotelsRoom) {
+  const isHostelsRoom = hostel.rooms.includes(room.id);
+  if (!isHostelsRoom) {
     return next(
-      new ErrorHandler("This Room is not available in this hotel", 400)
+      new ErrorHandler("This Room is not available in this hostel", 400)
     );
   }
 
@@ -72,7 +72,7 @@ exports.createBooking = catchAsyncErrors(async (req, res, next) => {
 
   await Booking.create({
     user: req.user.id,
-    hotel: hotel.id,
+    hostel: hostel.id,
     room: room.id,
     dates: formattedDates,
     totalPricePerDay,
@@ -138,7 +138,7 @@ exports.updateBooking = catchAsyncErrors(async (req, res, next) => {
 exports.getOwnBookingDetails = catchAsyncErrors(async (req, res, next) => {
   const booking = await Booking.findById(req.params.id)
     .populate("room")
-    .populate("hotel");
+    .populate("hostel");
 
   if (!booking) {
     return next(new ErrorHandler("Booking not found", 404));
@@ -184,7 +184,7 @@ exports.getAllBookings = catchAsyncErrors(async (req, res, next) => {
 exports.getBookingDetails = catchAsyncErrors(async (req, res, next) => {
   const booking = await Booking.findById(req.params.id)
     .populate("room")
-    .populate("hotel");
+    .populate("hostel");
   if (!booking) {
     return next(new ErrorHandler("Booking not found", 404));
   }

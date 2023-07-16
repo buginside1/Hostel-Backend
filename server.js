@@ -29,13 +29,13 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log(`User Connected: ${socket.id}`);
 
-  socket.on("join-hotel-chat", (data) => {
+  socket.on("join-hostel-chat", (data) => {
     socket.join(data);
-    console.log(`User with ID: ${socket.id} joined chats of hotel ID: ${data}`);
+    console.log(`User with ID: ${socket.id} joined chats of hostel ID: ${data}`);
   });
 
   socket.on("send_message", (data) => {
-    socket.to(data.hotel).emit("receive_message", data);
+    socket.to(data.hostel).emit("receive_message", data);
   });
 
   socket.on("disconnect", () => {

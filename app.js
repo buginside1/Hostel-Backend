@@ -10,7 +10,7 @@ require('dotenv').config()
 
 // Routes import
 const userRoute = require('./routes/userRoute');
-const hotelRoute = require('./routes/hotelRoute');
+const hostelRoute = require('./routes/hostelRoute');
 const roomRoute = require('./routes/roomRoute');
 const bookingRoute = require('./routes/bookingRoute');
 const errorMiddleware = require('./middlewares/errorMiddleware');
@@ -27,7 +27,7 @@ app.use(morgan("dev"));
     }))
 
 app.use('/api/v1', userRoute);
-app.use('/api/v1', hotelRoute);
+app.use('/api/v1', hostelRoute);
 app.use('/api/v1', roomRoute);
 app.use('/api/v1', bookingRoute);
 

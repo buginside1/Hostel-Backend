@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const hotelSchema = new mongoose.Schema({
+const hostelSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -32,7 +32,7 @@ const hotelSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
-const Hotel = mongoose.model("Hotels", hotelSchema);
+const Hostel = mongoose.model("Hostels", hostelSchema);
 
 
-module.exports = Hotel;
+module.exports = Hostel;
