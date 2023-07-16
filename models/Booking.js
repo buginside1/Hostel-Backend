@@ -10,12 +10,10 @@ const bookingSchema = new mongoose.Schema(
     hostel: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Hostels",
-      required: true,
     },
     room: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Rooms",
-      required: true,
     },
     dates: [
       {
@@ -24,7 +22,7 @@ const bookingSchema = new mongoose.Schema(
       },
     ],
     totalPricePerDay: {
-      type: Number
+      type: Number,
     },
     phone: {
       type: Number,

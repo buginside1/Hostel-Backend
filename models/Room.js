@@ -22,7 +22,6 @@ const roomSchema = new mongoose.Schema(
     },
     PricePerDay: {
       type: Number,
-      required: true,
     },
     specification: [String],
     notAvailable: [
@@ -39,7 +38,6 @@ const roomSchema = new mongoose.Schema(
     hostel: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Hostels",
-      required: true,
     },
   },
   { timestamps: true }
