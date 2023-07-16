@@ -24,8 +24,7 @@ const bookingSchema = new mongoose.Schema(
       },
     ],
     totalPricePerDay: {
-      type: Number,
-      required: true,
+      type: Number
     },
     phone: {
       type: Number,
